@@ -1,18 +1,18 @@
 package honeycomb
 
 import (
-	"github.com/onsi/ginkgo/types"
 	"github.com/cloudfoundry/custom-cats-reporters/honeycomb/client"
+	"github.com/onsi/ginkgo/config"
+	"github.com/onsi/ginkgo/types"
 	"strings"
 )
 
 type SpecEvent struct {
 	Description string
-	State string
+	State       string
 }
 
-
-type honeyCombReporter struct{
+type honeyCombReporter struct {
 	client client.Client
 }
 
@@ -21,7 +21,7 @@ func New(client client.Client) honeyCombReporter {
 	return honeyCombReporter{client: client}
 }
 
-func (hr honeyCombReporter) SpecDidComplete(specSummary *types.SpecSummary)  {
+func (hr honeyCombReporter) SpecDidComplete(specSummary *types.SpecSummary) {
 	specEvent := SpecEvent{}
 
 	specEvent.State = getTestState(specSummary.State)
@@ -30,8 +30,15 @@ func (hr honeyCombReporter) SpecDidComplete(specSummary *types.SpecSummary)  {
 	hr.client.SendEvent(specEvent)
 }
 
+func (hr honeyCombReporter) SpecSuiteWillBegin(config config.GinkgoConfigType, summary *types.SuiteSummary) {
+}
+func (hr honeyCombReporter) BeforeSuiteDidRun(setupSummary *types.SetupSummary) {}
+func (hr honeyCombReporter) SpecWillRun(specSummary *types.SpecSummary)         {}
+func (hr honeyCombReporter) AfterSuiteDidRun(setupSummary *types.SetupSummary)  {}
+func (hr honeyCombReporter) SpecSuiteDidEnd(summary *types.SuiteSummary)        {}
+
 func getTestState(state types.SpecState) string {
-	switch state{
+	switch state {
 	case types.SpecStatePassed:
 		return "passed"
 	case types.SpecStateFailed:

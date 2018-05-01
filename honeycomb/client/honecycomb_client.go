@@ -15,7 +15,6 @@ func New(config libhoney.Config) honeyCombClient {
 	return honeyCombClient{config: config}
 }
 
-
 // We created this because the way the honey comb go client is written makes
 // it impossible to test in a reasonable way
 // We need the init method to return a client so that we can test it with fakes.
