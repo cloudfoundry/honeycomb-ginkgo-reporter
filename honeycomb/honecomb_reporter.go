@@ -5,6 +5,7 @@ import (
 	"github.com/onsi/ginkgo/config"
 	"github.com/onsi/ginkgo/types"
 	"strings"
+	"github.com/onsi/ginkgo"
 )
 
 type SpecEvent struct {
@@ -16,8 +17,7 @@ type honeyCombReporter struct {
 	client client.Client
 }
 
-func New(client client.Client) honeyCombReporter {
-
+func New(client client.Client) ginkgo.Reporter {
 	return honeyCombReporter{client: client}
 }
 
