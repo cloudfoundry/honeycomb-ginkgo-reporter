@@ -26,10 +26,9 @@ func (hr honeyCombReporter) SpecDidComplete(specSummary *types.SpecSummary) {
 	specEvent := SpecEvent{
 		State:       getTestState(specSummary.State),
 		Description: createTestDescription(specSummary.ComponentTexts),
-		GlobalTags:  hr.globalTags,
 	}
 
-	hr.client.SendEvent(specEvent)
+	hr.client.SendEvent(specEvent, hr.globalTags)
 }
 
 func (hr honeyCombReporter) SpecSuiteWillBegin(config config.GinkgoConfigType, summary *types.SuiteSummary) {
@@ -60,7 +59,7 @@ func getTestState(state types.SpecState) string {
 	case types.SpecStateInvalid:
 		return "invalid"
 	default:
-		panic("unkown spec state")
+		panic("unknown spec state")
 	}
 }
 

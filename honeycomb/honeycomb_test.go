@@ -27,7 +27,8 @@ var _ = Describe("Honeycomb Reporter", func() {
 			honeycombReporter.SpecDidComplete(&specSummary)
 
 			Expect(honeycombClient.SendEventCallCount()).To(Equal(1))
-			Expect(honeycombClient.SendEventArgsForCall(0)).To(Equal(honeycomb.SpecEvent{Description: "some-it-description | some-context-description | some-describe-description", State: expectedSpecState}))
+			specEventArgs, _ := honeycombClient.SendEventArgsForCall(0)
+			Expect(specEventArgs).To(Equal(honeycomb.SpecEvent{Description: "some-it-description | some-context-description | some-describe-description", State: expectedSpecState}))
 
 		},
 		Entry("with a successful state", types.SpecStatePassed, "passed"),
@@ -40,7 +41,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 	)
 
 	Describe("with global tags", func() {
-		It("should set global tags for each evet", func() {
+		It("should set global tags for each event", func() {
 			honeycombReporter := honeycomb.New(honeycombClient)
 			globalTags := map[string]interface{}{"some-tag": "some-tag-value"}
 			honeycombReporter.SetGlobalTags(globalTags)
@@ -51,8 +52,8 @@ var _ = Describe("Honeycomb Reporter", func() {
 			}
 			honeycombReporter.SpecDidComplete(&specSummary)
 			Expect(honeycombClient.SendEventCallCount()).To(Equal(1))
-			sendEventArgs := honeycombClient.SendEventArgsForCall(0).(honeycomb.SpecEvent)
-			Expect(sendEventArgs.GlobalTags).To(Equal(globalTags))
+			_, globalTagsArgs := honeycombClient.SendEventArgsForCall(0)
+			Expect(globalTagsArgs).To(Equal(globalTags))
 		})
 	})
 })
