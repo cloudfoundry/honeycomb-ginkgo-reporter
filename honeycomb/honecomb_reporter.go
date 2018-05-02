@@ -5,27 +5,29 @@ import (
 	"github.com/onsi/ginkgo/config"
 	"github.com/onsi/ginkgo/types"
 	"strings"
-	"github.com/onsi/ginkgo"
 )
 
 type SpecEvent struct {
 	Description string
 	State       string
+	GlobalTags  map[string]interface{}
 }
 
 type honeyCombReporter struct {
-	client client.Client
+	client     client.Client
+	globalTags map[string]interface{}
 }
 
-func New(client client.Client) ginkgo.Reporter {
+func New(client client.Client) honeyCombReporter {
 	return honeyCombReporter{client: client}
 }
 
 func (hr honeyCombReporter) SpecDidComplete(specSummary *types.SpecSummary) {
-	specEvent := SpecEvent{}
-
-	specEvent.State = getTestState(specSummary.State)
-	specEvent.Description = createTestDescription(specSummary.ComponentTexts)
+	specEvent := SpecEvent{
+		State:       getTestState(specSummary.State),
+		Description: createTestDescription(specSummary.ComponentTexts),
+		GlobalTags:  hr.globalTags,
+	}
 
 	hr.client.SendEvent(specEvent)
 }
@@ -36,6 +38,10 @@ func (hr honeyCombReporter) BeforeSuiteDidRun(setupSummary *types.SetupSummary) 
 func (hr honeyCombReporter) SpecWillRun(specSummary *types.SpecSummary)         {}
 func (hr honeyCombReporter) AfterSuiteDidRun(setupSummary *types.SetupSummary)  {}
 func (hr honeyCombReporter) SpecSuiteDidEnd(summary *types.SuiteSummary)        {}
+
+func (hr *honeyCombReporter) SetGlobalTags(globalTags map[string]interface{}) {
+	hr.globalTags = globalTags
+}
 
 func getTestState(state types.SpecState) string {
 	switch state {

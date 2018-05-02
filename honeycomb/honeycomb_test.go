@@ -38,4 +38,21 @@ var _ = Describe("Honeycomb Reporter", func() {
 		Entry("with a timed out state", types.SpecStateTimedOut, "timedOut"),
 		Entry("with an invalid state", types.SpecStateInvalid, "invalid"),
 	)
+
+	Describe("with global tags", func() {
+		It("should set global tags for each evet", func() {
+			honeycombReporter := honeycomb.New(honeycombClient)
+			globalTags := map[string]interface{}{"some-tag": "some-tag-value"}
+			honeycombReporter.SetGlobalTags(globalTags)
+
+			specSummary := types.SpecSummary{
+				State:          types.SpecStatePassed,
+				ComponentTexts: []string{"some-it-description", "some-context-description", "some-describe-description"},
+			}
+			honeycombReporter.SpecDidComplete(&specSummary)
+			Expect(honeycombClient.SendEventCallCount()).To(Equal(1))
+			sendEventArgs := honeycombClient.SendEventArgsForCall(0).(honeycomb.SpecEvent)
+			Expect(sendEventArgs.GlobalTags).To(Equal(globalTags))
+		})
+	})
 })
