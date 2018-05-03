@@ -11,7 +11,6 @@ import (
 type SpecEvent struct {
 	Description string
 	State       string
-	GlobalTags  map[string]interface{}
 }
 
 type honeyCombReporter struct {
