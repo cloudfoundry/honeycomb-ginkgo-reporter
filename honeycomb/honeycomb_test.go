@@ -40,6 +40,36 @@ var _ = Describe("Honeycomb Reporter", func() {
 		Entry("with an invalid state", types.SpecStateInvalid, "invalid"),
 	)
 
+	Describe("SpecSuiteDidEnd", func() {
+		It("sends the correct number of flakes to honeycomb", func() {
+			honeycombReporter := honeycomb.New(honeycombClient)
+
+			suiteSummary := types.SuiteSummary{
+				NumberOfFlakedSpecs: 1,
+			}
+			honeycombReporter.SpecSuiteDidEnd(&suiteSummary)
+
+			Expect(honeycombClient.SendEventCallCount()).To(Equal(1))
+
+			specEventArgs, _, _ := honeycombClient.SendEventArgsForCall(0)
+			Expect(specEventArgs).To(Equal(types.SuiteSummary{
+				SuiteDescription: "",
+				SuiteSucceeded:   false,
+				SuiteID:          "",
+				NumberOfSpecsBeforeParallelization: 0,
+				NumberOfTotalSpecs:                 0,
+				NumberOfSpecsThatWillBeRun:         0,
+				NumberOfPendingSpecs:               0,
+				NumberOfSkippedSpecs:               0,
+				NumberOfPassedSpecs:                0,
+				NumberOfFailedSpecs:                0,
+				NumberOfFlakedSpecs:                1,
+				RunTime:                            0,
+			}))
+		})
+
+	})
+
 	Describe("with global tags", func() {
 		It("should set global tags for each event", func() {
 			honeycombReporter := honeycomb.New(honeycombClient)
