@@ -1,10 +1,11 @@
 package honeycomb
 
 import (
+	"strings"
+
 	"github.com/cloudfoundry/custom-cats-reporters/honeycomb/client"
 	"github.com/onsi/ginkgo/config"
 	"github.com/onsi/ginkgo/types"
-	"strings"
 )
 
 type SpecEvent struct {
@@ -16,6 +17,7 @@ type SpecEvent struct {
 type honeyCombReporter struct {
 	client     client.Client
 	globalTags map[string]interface{}
+	customTags map[string]interface{}
 }
 
 func New(client client.Client) honeyCombReporter {
@@ -28,7 +30,7 @@ func (hr honeyCombReporter) SpecDidComplete(specSummary *types.SpecSummary) {
 		Description: createTestDescription(specSummary.ComponentTexts),
 	}
 
-	hr.client.SendEvent(specEvent, hr.globalTags)
+	hr.client.SendEvent(specEvent, hr.globalTags, hr.customTags)
 }
 
 func (hr honeyCombReporter) SpecSuiteWillBegin(config config.GinkgoConfigType, summary *types.SuiteSummary) {
@@ -40,6 +42,10 @@ func (hr honeyCombReporter) SpecSuiteDidEnd(summary *types.SuiteSummary)        
 
 func (hr *honeyCombReporter) SetGlobalTags(globalTags map[string]interface{}) {
 	hr.globalTags = globalTags
+}
+
+func (hr *honeyCombReporter) SetCustomTags(customTags map[string]interface{}) {
+	hr.customTags = customTags
 }
 
 func getTestState(state types.SpecState) string {

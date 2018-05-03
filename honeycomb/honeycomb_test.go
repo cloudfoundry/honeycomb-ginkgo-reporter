@@ -27,7 +27,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 			honeycombReporter.SpecDidComplete(&specSummary)
 
 			Expect(honeycombClient.SendEventCallCount()).To(Equal(1))
-			specEventArgs, _ := honeycombClient.SendEventArgsForCall(0)
+			specEventArgs, _, _ := honeycombClient.SendEventArgsForCall(0)
 			Expect(specEventArgs).To(Equal(honeycomb.SpecEvent{Description: "some-it-description | some-context-description | some-describe-description", State: expectedSpecState}))
 
 		},
@@ -52,8 +52,24 @@ var _ = Describe("Honeycomb Reporter", func() {
 			}
 			honeycombReporter.SpecDidComplete(&specSummary)
 			Expect(honeycombClient.SendEventCallCount()).To(Equal(1))
-			_, globalTagsArgs := honeycombClient.SendEventArgsForCall(0)
+			_, globalTagsArgs, _ := honeycombClient.SendEventArgsForCall(0)
 			Expect(globalTagsArgs).To(Equal(globalTags))
+		})
+	})
+	Describe("with custom tags", func() {
+		It("should set custom tags for each event", func() {
+			honeycombReporter := honeycomb.New(honeycombClient)
+			customTags := map[string]interface{}{"some-tag": "some-tag-value"}
+			honeycombReporter.SetCustomTags(customTags)
+
+			specSummary := types.SpecSummary{
+				State:          types.SpecStatePassed,
+				ComponentTexts: []string{"some-it-description", "some-context-description", "some-describe-description"},
+			}
+			honeycombReporter.SpecDidComplete(&specSummary)
+			Expect(honeycombClient.SendEventCallCount()).To(Equal(1))
+			_, _, customTagsArgs := honeycombClient.SendEventArgsForCall(0)
+			Expect(customTagsArgs).To(Equal(customTags))
 		})
 	})
 })
