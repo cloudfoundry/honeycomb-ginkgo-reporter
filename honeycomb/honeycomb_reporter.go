@@ -29,10 +29,14 @@ func (hr honeyCombReporter) SpecDidComplete(specSummary *types.SpecSummary) {
 		Description: createTestDescription(specSummary.ComponentTexts),
 	}
 
+	// intentionally drop all errors to satisfy reporter interface
+	// and avoid unnecessary noise when an event cannot be sent to honeycomb
 	hr.client.SendEvent(specEvent, hr.globalTags, hr.customTags)
 }
 
 func (hr honeyCombReporter) SpecSuiteDidEnd(summary *types.SuiteSummary) {
+	// intentionally drop all errors to satisfy reporter interface
+	// and avoid unnecessary noise when an event cannot be sent to honeycomb
 	hr.client.SendEvent(*summary, hr.globalTags, hr.customTags)
 }
 
