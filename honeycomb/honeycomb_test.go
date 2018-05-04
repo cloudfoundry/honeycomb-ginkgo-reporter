@@ -28,17 +28,48 @@ var _ = Describe("Honeycomb Reporter", func() {
 
 			Expect(honeycombClient.SendEventCallCount()).To(Equal(1))
 			specEventArgs, _, _ := honeycombClient.SendEventArgsForCall(0)
-			Expect(specEventArgs).To(Equal(honeycomb.SpecEvent{Description: "some-it-description | some-context-description | some-describe-description", State: expectedSpecState}))
+			Expect(specEventArgs).To(Equal(honeycomb.SpecEvent{
+				Description: "some-it-description | some-context-description | some-describe-description",
+				State: expectedSpecState,
+			}))
 
 		},
 		Entry("with a successful state", types.SpecStatePassed, "passed"),
-		Entry("with a failed state", types.SpecStateFailed, "failed"),
 		Entry("with a pending state", types.SpecStatePending, "pending"),
 		Entry("with a skipped state", types.SpecStateSkipped, "skipped"),
 		Entry("with a panicked state", types.SpecStatePanicked, "panicked"),
 		Entry("with a timed out state", types.SpecStateTimedOut, "timedOut"),
 		Entry("with an invalid state", types.SpecStateInvalid, "invalid"),
 	)
+
+	Describe("SpedDidComplete", func(){
+		Context("when a spec fails", func(){
+			It("tells us the line of code and message of the failure", func(){
+				honeycombReporter := honeycomb.New(honeycombClient)
+				specSummary := types.SpecSummary{
+					State:          types.SpecStateFailed,
+					ComponentTexts: []string{"some-it-description", "some-context-description", "some-describe-description"},
+					Failure: types.SpecFailure{
+						Message: "some-failure-message",
+						ComponentCodeLocation: types.CodeLocation{
+							FileName: "some-file-name",
+							LineNumber: 2,
+						},
+					},
+				}
+				honeycombReporter.SpecDidComplete(&specSummary)
+
+				Expect(honeycombClient.SendEventCallCount()).To(Equal(1))
+				specEventArgs, _, _ := honeycombClient.SendEventArgsForCall(0)
+				Expect(specEventArgs).To(Equal(honeycomb.SpecEvent{
+					Description: "some-it-description | some-context-description | some-describe-description",
+					State: "failed",
+					FailureMessage: "some-failure-message",
+					FailureLocation: "some-file-name:2",
+				}))
+			})
+		})
+	})
 
 	Describe("SpecSuiteDidEnd", func() {
 		It("sends the correct number of flakes to honeycomb", func() {
