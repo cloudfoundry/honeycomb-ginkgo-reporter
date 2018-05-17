@@ -48,6 +48,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 				honeycombReporter := honeycomb.New(honeycombClient)
 				specSummary := types.SpecSummary{
 					State:          types.SpecStateFailed,
+					CapturedOutput: "some-failed-test-output",
 					ComponentTexts: []string{"some-it-description", "some-context-description", "some-describe-description"},
 					Failure: types.SpecFailure{
 						Message: "some-failure-message",
@@ -68,6 +69,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 				Expect(specEventArgs).To(Equal(honeycomb.SpecEvent{
 					Description:           "some-it-description | some-context-description | some-describe-description",
 					State:                 "failed",
+					FailureOutput:         "some-failed-test-output",
 					FailureMessage:        "some-failure-message",
 					FailureLocation:       "failure-location-file-name:77",
 					ComponentCodeLocation: "component-location-file-name:2",
@@ -109,8 +111,9 @@ var _ = Describe("Honeycomb Reporter", func() {
 			It("tells us the component type, location (line of code) of the failure and component and message of the failure", func() {
 				honeycombReporter := honeycomb.New(honeycombClient)
 				setupSummary := types.SetupSummary{
-					State:         types.SpecStateFailed,
-					ComponentType: types.SpecComponentTypeBeforeSuite,
+					State:          types.SpecStateFailed,
+					CapturedOutput: "some-failed-test-output",
+					ComponentType:  types.SpecComponentTypeBeforeSuite,
 					Failure: types.SpecFailure{
 						Message: "some-failure-message",
 						Location: types.CodeLocation{
@@ -129,6 +132,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 				specEventArgs, _, _ := honeycombClient.SendEventArgsForCall(0)
 				Expect(specEventArgs).To(Equal(honeycomb.SpecEvent{
 					State:                 "failed",
+					FailureOutput:         "some-failed-test-output",
 					ComponentType:         "beforeSuite",
 					FailureMessage:        "some-failure-message",
 					FailureLocation:       "failure-location-file-name:77",

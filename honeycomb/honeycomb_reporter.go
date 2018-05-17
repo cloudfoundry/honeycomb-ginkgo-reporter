@@ -13,6 +13,7 @@ type SpecEvent struct {
 	State                 string
 	FailureMessage        string
 	FailureLocation       string
+	FailureOutput         string
 	ComponentCodeLocation string
 	ComponentType         string
 }
@@ -37,6 +38,7 @@ func (hr honeyCombReporter) SpecDidComplete(specSummary *types.SpecSummary) {
 		specEvent.FailureMessage = specSummary.Failure.Message
 		specEvent.ComponentCodeLocation = specSummary.Failure.ComponentCodeLocation.String()
 		specEvent.FailureLocation = specSummary.Failure.Location.String()
+		specEvent.FailureOutput = specSummary.CapturedOutput
 	}
 
 	// intentionally drop all errors to satisfy reporter interface
@@ -60,6 +62,7 @@ func (hr honeyCombReporter) BeforeSuiteDidRun(setupSummary *types.SetupSummary) 
 		specEvent.FailureMessage = setupSummary.Failure.Message
 		specEvent.ComponentCodeLocation = setupSummary.Failure.ComponentCodeLocation.String()
 		specEvent.FailureLocation = setupSummary.Failure.Location.String()
+		specEvent.FailureOutput = setupSummary.CapturedOutput
 	}
 
 	hr.client.SendEvent(specEvent, hr.globalTags, hr.customTags)
