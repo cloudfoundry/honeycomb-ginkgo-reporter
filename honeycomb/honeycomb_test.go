@@ -30,7 +30,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 			specEventArgs, _, _ := honeycombClient.SendEventArgsForCall(0)
 			Expect(specEventArgs).To(Equal(honeycomb.SpecEvent{
 				Description: "some-it-description | some-context-description | some-describe-description",
-				State: expectedSpecState,
+				State:       expectedSpecState,
 			}))
 
 		},
@@ -42,9 +42,9 @@ var _ = Describe("Honeycomb Reporter", func() {
 		Entry("with an invalid state", types.SpecStateInvalid, "invalid"),
 	)
 
-	Describe("SpecDidComplete", func(){
-		Context("when a spec fails", func(){
-			It("tells us the location (line of code) of the failure and component and message of the failure", func(){
+	Describe("SpecDidComplete", func() {
+		Context("when a spec fails", func() {
+			It("tells us the location (line of code) of the failure and component and message of the failure", func() {
 				honeycombReporter := honeycomb.New(honeycombClient)
 				specSummary := types.SpecSummary{
 					State:          types.SpecStateFailed,
@@ -52,11 +52,11 @@ var _ = Describe("Honeycomb Reporter", func() {
 					Failure: types.SpecFailure{
 						Message: "some-failure-message",
 						Location: types.CodeLocation{
-						    FileName: "failure-location-file-name",
-						    LineNumber: 77,
+							FileName:   "failure-location-file-name",
+							LineNumber: 77,
 						},
 						ComponentCodeLocation: types.CodeLocation{
-							FileName: "component-location-file-name",
+							FileName:   "component-location-file-name",
 							LineNumber: 2,
 						},
 					},
@@ -66,10 +66,72 @@ var _ = Describe("Honeycomb Reporter", func() {
 				Expect(honeycombClient.SendEventCallCount()).To(Equal(1))
 				specEventArgs, _, _ := honeycombClient.SendEventArgsForCall(0)
 				Expect(specEventArgs).To(Equal(honeycomb.SpecEvent{
-					Description: "some-it-description | some-context-description | some-describe-description",
-					State: "failed",
-					FailureMessage: "some-failure-message",
-					FailureLocation: "failure-location-file-name:77",
+					Description:           "some-it-description | some-context-description | some-describe-description",
+					State:                 "failed",
+					FailureMessage:        "some-failure-message",
+					FailureLocation:       "failure-location-file-name:77",
+					ComponentCodeLocation: "component-location-file-name:2",
+				}))
+			})
+		})
+	})
+
+	DescribeTable("BeforeSuiteDidRun",
+		func(givenComponentType types.SpecComponentType, expectedType string) {
+			honeycombReporter := honeycomb.New(honeycombClient)
+
+			setupSummary := types.SetupSummary{
+				ComponentType: givenComponentType,
+			}
+			honeycombReporter.BeforeSuiteDidRun(&setupSummary)
+
+			Expect(honeycombClient.SendEventCallCount()).To(Equal(1))
+			specEventArgs, _, _ := honeycombClient.SendEventArgsForCall(0)
+			Expect(specEventArgs).To(Equal(honeycomb.SpecEvent{
+				State:         "invalid",
+				ComponentType: expectedType,
+			}))
+
+		},
+		Entry("with an invalid type", types.SpecComponentTypeInvalid, "invalid"),
+		Entry("with a container", types.SpecComponentTypeContainer, "container"),
+		Entry("with a before suite", types.SpecComponentTypeBeforeSuite, "beforeSuite"),
+		Entry("with an after suite", types.SpecComponentTypeAfterSuite, "afterSuite"),
+		Entry("with a before each", types.SpecComponentTypeBeforeEach, "beforeEach"),
+		Entry("with a just before each", types.SpecComponentTypeJustBeforeEach, "justBeforeEach"),
+		Entry("with an after each", types.SpecComponentTypeAfterEach, "afterEach"),
+		Entry("with an it", types.SpecComponentTypeIt, "it"),
+		Entry("with a measure", types.SpecComponentTypeMeasure, "measure"),
+	)
+
+	Describe("BeforeSuiteDidRun", func() {
+		Context("when a spec fails", func() {
+			It("tells us the component type, location (line of code) of the failure and component and message of the failure", func() {
+				honeycombReporter := honeycomb.New(honeycombClient)
+				setupSummary := types.SetupSummary{
+					State:         types.SpecStateFailed,
+					ComponentType: types.SpecComponentTypeBeforeSuite,
+					Failure: types.SpecFailure{
+						Message: "some-failure-message",
+						Location: types.CodeLocation{
+							FileName:   "failure-location-file-name",
+							LineNumber: 77,
+						},
+						ComponentCodeLocation: types.CodeLocation{
+							FileName:   "component-location-file-name",
+							LineNumber: 2,
+						},
+					},
+				}
+				honeycombReporter.BeforeSuiteDidRun(&setupSummary)
+
+				Expect(honeycombClient.SendEventCallCount()).To(Equal(1))
+				specEventArgs, _, _ := honeycombClient.SendEventArgsForCall(0)
+				Expect(specEventArgs).To(Equal(honeycomb.SpecEvent{
+					State:                 "failed",
+					ComponentType:         "beforeSuite",
+					FailureMessage:        "some-failure-message",
+					FailureLocation:       "failure-location-file-name:77",
 					ComponentCodeLocation: "component-location-file-name:2",
 				}))
 			})
