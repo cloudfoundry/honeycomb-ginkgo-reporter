@@ -42,17 +42,21 @@ var _ = Describe("Honeycomb Reporter", func() {
 		Entry("with an invalid state", types.SpecStateInvalid, "invalid"),
 	)
 
-	Describe("SpedDidComplete", func(){
+	Describe("SpecDidComplete", func(){
 		Context("when a spec fails", func(){
-			It("tells us the line of code and message of the failure", func(){
+			It("tells us the location (line of code) of the failure and component and message of the failure", func(){
 				honeycombReporter := honeycomb.New(honeycombClient)
 				specSummary := types.SpecSummary{
 					State:          types.SpecStateFailed,
 					ComponentTexts: []string{"some-it-description", "some-context-description", "some-describe-description"},
 					Failure: types.SpecFailure{
 						Message: "some-failure-message",
+						Location: types.CodeLocation{
+						    FileName: "failure-location-file-name",
+						    LineNumber: 77,
+						},
 						ComponentCodeLocation: types.CodeLocation{
-							FileName: "some-file-name",
+							FileName: "component-location-file-name",
 							LineNumber: 2,
 						},
 					},
@@ -65,7 +69,8 @@ var _ = Describe("Honeycomb Reporter", func() {
 					Description: "some-it-description | some-context-description | some-describe-description",
 					State: "failed",
 					FailureMessage: "some-failure-message",
-					FailureLocation: "some-file-name:2",
+					FailureLocation: "failure-location-file-name:77",
+					ComponentCodeLocation: "component-location-file-name:2",
 				}))
 			})
 		})
@@ -117,6 +122,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 			Expect(globalTagsArgs).To(Equal(globalTags))
 		})
 	})
+
 	Describe("with custom tags", func() {
 		It("should set custom tags for each event", func() {
 			honeycombReporter := honeycomb.New(honeycombClient)
