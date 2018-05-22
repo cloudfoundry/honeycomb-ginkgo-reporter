@@ -44,7 +44,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 
 	Describe("SpecDidComplete", func() {
 		Context("when a spec fails", func() {
-			It("tells us the location (line of code) of the failure and component and message of the failure", func() {
+			It("tells us about the failure", func() {
 				honeycombReporter := honeycomb.New(honeycombClient)
 				specSummary := types.SpecSummary{
 					State:          types.SpecStateFailed,
@@ -60,6 +60,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 							FileName:   "component-location-file-name",
 							LineNumber: 2,
 						},
+						ComponentType: types.SpecComponentTypeIt,
 					},
 				}
 				honeycombReporter.SpecDidComplete(&specSummary)
@@ -73,8 +74,10 @@ var _ = Describe("Honeycomb Reporter", func() {
 					FailureMessage:        "some-failure-message",
 					FailureLocation:       "failure-location-file-name:77",
 					ComponentCodeLocation: "component-location-file-name:2",
+					ComponentType:         "it",
 				}))
 			})
+
 		})
 	})
 
