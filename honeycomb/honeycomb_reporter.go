@@ -16,6 +16,7 @@ type SpecEvent struct {
 	FailureOutput         string
 	ComponentCodeLocation string
 	ComponentType         string
+	RunTimeInSeconds      int
 }
 
 type honeyCombReporter struct {
@@ -30,8 +31,9 @@ func New(client client.Client) honeyCombReporter {
 
 func (hr honeyCombReporter) SpecDidComplete(specSummary *types.SpecSummary) {
 	specEvent := SpecEvent{
-		State:       getTestState(specSummary.State),
-		Description: createTestDescription(specSummary.ComponentTexts),
+		State:            getTestState(specSummary.State),
+		Description:      createTestDescription(specSummary.ComponentTexts),
+		RunTimeInSeconds: int(specSummary.RunTime / 1000000000),
 	}
 
 	if specSummary.State == types.SpecStateFailed {
