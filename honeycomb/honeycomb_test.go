@@ -1,6 +1,8 @@
 package honeycomb_test
 
 import (
+	"time"
+
 	"github.com/cloudfoundry/custom-cats-reporters/honeycomb"
 	"github.com/cloudfoundry/custom-cats-reporters/honeycomb/client/clientfakes"
 	. "github.com/onsi/ginkgo"
@@ -62,6 +64,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 						},
 						ComponentType: types.SpecComponentTypeIt,
 					},
+					RunTime: 1 * time.Second,
 				}
 				honeycombReporter.SpecDidComplete(&specSummary)
 
@@ -75,6 +78,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 					FailureLocation:       "failure-location-file-name:77",
 					ComponentCodeLocation: "component-location-file-name:2",
 					ComponentType:         "it",
+					RunTimeInSeconds:      1,
 				}))
 			})
 
