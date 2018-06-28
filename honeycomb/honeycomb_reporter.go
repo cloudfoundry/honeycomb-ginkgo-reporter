@@ -16,7 +16,7 @@ type SpecEvent struct {
 	FailureOutput         string
 	ComponentCodeLocation string
 	ComponentType         string
-	RunTimeInSeconds      int
+	RunTimeInSeconds      float64
 }
 
 type honeyCombReporter struct {
@@ -33,7 +33,7 @@ func (hr honeyCombReporter) SpecDidComplete(specSummary *types.SpecSummary) {
 	specEvent := SpecEvent{
 		State:            getTestState(specSummary.State),
 		Description:      createTestDescription(specSummary.ComponentTexts),
-		RunTimeInSeconds: int(specSummary.RunTime / 1000000000),
+		RunTimeInSeconds: specSummary.RunTime.Seconds(),
 	}
 
 	if specSummary.State == types.SpecStateFailed {
