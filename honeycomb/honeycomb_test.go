@@ -36,7 +36,6 @@ var _ = Describe("Honeycomb Reporter", func() {
 			}))
 
 		},
-		Entry("with a successful state", types.SpecStatePassed, "passed"),
 		Entry("with a pending state", types.SpecStatePending, "pending"),
 		Entry("with a skipped state", types.SpecStateSkipped, "skipped"),
 		Entry("with a panicked state", types.SpecStatePanicked, "panicked"),
@@ -78,10 +77,30 @@ var _ = Describe("Honeycomb Reporter", func() {
 					FailureLocation:       "failure-location-file-name:77",
 					ComponentCodeLocation: "component-location-file-name:2",
 					ComponentType:         "it",
-					RunTimeInSeconds:      1,
+					RunTimeInSeconds:      "1",
 				}))
 			})
+		})
 
+		Context("when a spec passes", func() {
+			It("reports RunTime", func() {
+				honeycombReporter := honeycomb.New(honeycombClient)
+				specSummary := types.SpecSummary{
+					State:          types.SpecStatePassed,
+					CapturedOutput: "some-test-output",
+					ComponentTexts: []string{"some-it-description", "some-context-description", "some-describe-description"},
+					RunTime:        1 * time.Second,
+				}
+				honeycombReporter.SpecDidComplete(&specSummary)
+
+				Expect(honeycombClient.SendEventCallCount()).To(Equal(1))
+				specEventArgs, _, _ := honeycombClient.SendEventArgsForCall(0)
+				Expect(specEventArgs).To(Equal(honeycomb.SpecEvent{
+					Description:      "some-it-description | some-context-description | some-describe-description",
+					State:            "passed",
+					RunTimeInSeconds: "1",
+				}))
+			})
 		})
 	})
 
