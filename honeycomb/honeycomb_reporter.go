@@ -1,7 +1,7 @@
 package honeycomb
 
 import (
-	"strconv"
+	"fmt"
 	"strings"
 
 	"github.com/cloudfoundry/custom-cats-reporters/honeycomb/client"
@@ -44,7 +44,7 @@ func (hr honeyCombReporter) SpecDidComplete(specSummary *types.SpecSummary) {
 		specEvent.ComponentType = getComponentType(specSummary.Failure.ComponentType)
 	}
 	if specSummary.State == types.SpecStateFailed || specSummary.State == types.SpecStatePassed {
-		specEvent.RunTimeInSeconds = strconv.Itoa(int(specSummary.RunTime.Seconds()))
+		specEvent.RunTimeInSeconds = fmt.Sprintf("%f", specSummary.RunTime.Seconds())
 	}
 	// intentionally drop all errors to satisfy reporter interface
 	// and avoid unnecessary noise when an event cannot be sent to honeycomb
