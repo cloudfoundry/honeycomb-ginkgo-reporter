@@ -9,7 +9,7 @@ and then update this README.
 
 To use this reporter, 
 you'll need a Honeycomb account.
-You should be able to make an account on Honeycomb.io 
+You should be able to [make an account on Honeycomb.io](https://ui.honeycomb.io/signup)
 and get a dataset and a write key following their documentation.
 
 Then, in your suite test file,
