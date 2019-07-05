@@ -67,7 +67,13 @@ to understand exactly how that test fails.
 
 ## Adding Moar Data
 
-You'll probably want to add some tags to your events.
+You'll probably want to add some tags to your events,
+so you can break down your test failures by independent variables,
+and figure out what's causing your test failures.
+
+You may also want to filter out tests from specific runs,
+from specific environments,
+or tests that were run under specific conditions.
 
 You can add tags in two sets: Global and Custom.
 ```
