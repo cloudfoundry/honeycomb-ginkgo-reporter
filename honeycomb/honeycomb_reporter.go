@@ -90,7 +90,7 @@ func (hr *honeyCombReporter) SetCustomTags(customTags map[string]interface{}) {
 func getTestState(state types.SpecState) string {
 	switch state {
 	case types.SpecStatePassed:
-		return "passed"
+		return "bzzzzz"
 	case types.SpecStateFailed:
 		return "failed"
 	case types.SpecStatePending:
