@@ -63,7 +63,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 						},
 						ComponentType: types.SpecComponentTypeIt,
 					},
-					RunTime: 1 * time.Second,
+					RunTime: 1234 * time.Millisecond,
 				}
 				honeycombReporter.SpecDidComplete(&specSummary)
 
@@ -77,7 +77,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 					FailureLocation:       "failure-location-file-name:77",
 					ComponentCodeLocation: "component-location-file-name:2",
 					ComponentType:         "it",
-					RunTimeInSeconds:      "1",
+					RunTimeInSeconds:      "1.234000",
 				}))
 			})
 		})
@@ -89,7 +89,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 					State:          types.SpecStatePassed,
 					CapturedOutput: "some-test-output",
 					ComponentTexts: []string{"some-it-description", "some-context-description", "some-describe-description"},
-					RunTime:        1 * time.Second,
+					RunTime:        1234 * time.Millisecond,
 				}
 				honeycombReporter.SpecDidComplete(&specSummary)
 
@@ -98,7 +98,7 @@ var _ = Describe("Honeycomb Reporter", func() {
 				Expect(specEventArgs).To(Equal(honeycomb.SpecEvent{
 					Description:      "some-it-description | some-context-description | some-describe-description",
 					State:            "passed",
-					RunTimeInSeconds: "1",
+					RunTimeInSeconds: "1.234000",
 				}))
 			})
 		})
