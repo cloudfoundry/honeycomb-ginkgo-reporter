@@ -1,4 +1,4 @@
-# custom-cats-reporters
+# Honeycomb Ginkgo Reporter
 
 ## Getting Started
 You should be able to get set up in less than 30 minutes.
@@ -16,8 +16,8 @@ Then, in your suite test file,
 import this reporter and the honeycomb go library
 
 ```
-"github.com/cloudfoundry/custom-cats-reporters/honeycomb"
-"github.com/cloudfoundry/custom-cats-reporters/honeycomb/client"
+"github.com/cloudfoundry/honeycomb-ginkgo-reporter/honeycomb"
+"github.com/cloudfoundry/honeycomb-ginkgo-reporter/honeycomb/client"
 "github.com/honeycombio/libhoney-go"
 ```
 

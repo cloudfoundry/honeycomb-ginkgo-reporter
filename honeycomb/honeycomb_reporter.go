@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cloudfoundry/custom-cats-reporters/honeycomb/client"
+	"github.com/cloudfoundry/honeycomb-ginkgo-reporter/honeycomb/client"
 	"github.com/onsi/ginkgo/config"
 	"github.com/onsi/ginkgo/types"
 )

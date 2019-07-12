@@ -3,8 +3,8 @@ package honeycomb_test
 import (
 	"time"
 
-	"github.com/cloudfoundry/custom-cats-reporters/honeycomb"
-	"github.com/cloudfoundry/custom-cats-reporters/honeycomb/client/clientfakes"
+	"github.com/cloudfoundry/honeycomb-ginkgo-reporter/honeycomb"
+	"github.com/cloudfoundry/honeycomb-ginkgo-reporter/honeycomb/client/clientfakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	"github.com/onsi/ginkgo/types"
@@ -181,9 +181,9 @@ var _ = Describe("Honeycomb Reporter", func() {
 
 			specEventArgs, _, _ := honeycombClient.SendEventArgsForCall(0)
 			Expect(specEventArgs).To(Equal(types.SuiteSummary{
-				SuiteDescription: "",
-				SuiteSucceeded:   false,
-				SuiteID:          "",
+				SuiteDescription:                   "",
+				SuiteSucceeded:                     false,
+				SuiteID:                            "",
 				NumberOfSpecsBeforeParallelization: 0,
 				NumberOfTotalSpecs:                 0,
 				NumberOfSpecsThatWillBeRun:         0,

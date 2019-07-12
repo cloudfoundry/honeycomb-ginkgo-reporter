@@ -4,7 +4,7 @@ package clientfakes
 import (
 	"sync"
 
-	"github.com/cloudfoundry/custom-cats-reporters/honeycomb/client"
+	"github.com/cloudfoundry/honeycomb-ginkgo-reporter/honeycomb/client"
 )
 
 type FakeClient struct {
