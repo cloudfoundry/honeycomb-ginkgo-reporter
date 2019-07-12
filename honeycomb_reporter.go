@@ -84,6 +84,7 @@ func (hr *honeyCombReporter) SetGlobalTags(globalTags map[string]interface{}) {
 }
 
 func (hr *honeyCombReporter) SetCustomTags(customTags map[string]interface{}) {
+	panic("oh no")
 	hr.customTags = customTags
 }
 
